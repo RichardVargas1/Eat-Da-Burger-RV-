@@ -1,6 +1,7 @@
 // Require the express npm package
 var express = require("express");
 
+// Setting the port
 var PORT = process.env.PORT || 3000;
 
 var app = express();
@@ -8,7 +9,7 @@ var app = express();
 // Serve static content for the app from the "public" directory in the application directory.
 app.use(express.static("public"));
 
-// Parse request body as JSON
+// Parse request body as a JSON format
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -18,8 +19,8 @@ var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-// Import routes. And in return give this established server access to those routes
-var routes = require("./");
+// Import routes
+var routes = require("./controllers/burgers_controller.js");
 
 app.use(routes);
 

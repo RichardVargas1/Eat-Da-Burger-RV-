@@ -1,41 +1,104 @@
-var connection = require('../config/connection.js');
+var connection = require("../config/connection.js");
 
-var orm = {
+// Helper function for SQL syntax
+// Helps with passing 3 values into the mySQL query
+function printQuestionMarks(num) {
+  var arr = [];
 
-    allDaBurgers: function (cb) {
-        var queryString = "SELECT * FROM burgers";
-        connection.query(queryString, function (err, result) {
-            if (err) {
-                throw err;
-            }
-            // callback function
-            cb(result);
-        });
-    },
+  for (var i = 0; i < num; i++) {
+    arr.push("?");
+  }
 
-    insertDaBurger: function (burger, cb) {
-        var queryString = "INSERT INTO burgers (burger_name) VALUES (?)";
-        connection.query(queryString, [burger], function (err, result) {
-            if (err) {
-                throw err;
-            }
-            // callback function
-            cb(result);
-        });
-    },
+  return arr.toString();
+}
 
-    updateDaBurger: function (id, cb) {
-        var queryString = "UPDATE burgers SET devoured = true (?)";
+// Helper function to pair mySQL syntax
+function objToSql(ob) {
+  var arr = [];
 
-        connection.query(queryString, [id], function (err, result) {
-            if (err) {
-                throw err;
-            }
-            // callback function
-            cb(result);
-        });
+  // Pushing the values as a string integer array
+  for (var key in ob) {
+    var value = ob[key];
+    if (Object.hasOwnProperty.call(ob, key)) {
+      if (typeof value === "string" && value.indexOf(" ") >= 0) {
+        value = "'" + value + "'";
+      }
+      // if the value of (object), push key value
+      arr.push(key + "=" + value);
     }
+  }
+
+  // returns the array of strings
+  return arr.toString();
+}
+
+// "Object-Relational Mapping" object
+var orm = {
+  all: function(tableInput, cb) {
+    var queryString = "SELECT * FROM " + tableInput + ";";
+    connection.query(queryString, function(err, result) {
+      if (err) {
+        throw err;
+      }
+      // callback function
+      cb(result);
+    });
+  },
+  // "create a burger to eat"
+  create: function(table, cols, vals, cb) {
+    var queryString = "INSERT INTO " + table;
+
+    queryString += " (";
+    queryString += cols.toString();
+    queryString += ") ";
+    queryString += "VALUES (";
+    // printed question marks help format values/properties
+    queryString += printQuestionMarks(vals.length);
+    queryString += ") ";
+
+    console.log(queryString);
+
+    connection.query(queryString, vals, function(err, result) {
+      if (err) {
+        throw err;
+      }
+      // callback function
+      cb(result);
+    });
+  },
+  // "Updating the burger menu"
+  update: function(table, objColVals, condition, cb) {
+    var queryString = "UPDATE " + table;
+
+    queryString += " SET ";
+    queryString += objToSql(objColVals);
+    queryString += " WHERE ";
+    queryString += condition;
+
+    console.log(queryString);
+    connection.query(queryString, function(err, result) {
+      if (err) {
+        throw err;
+      }
+      // callback function
+      cb(result);
+    });
+  },
+  // "deleting the burger"
+  delete: function(table, condition, cb) {
+    var queryString = "DELETE FROM " + table;
+    queryString += " WHERE ";
+    queryString += condition;
+
+    connection.query(queryString, function(err, result) {
+      if (err) {
+        throw err;
+      }
+      // callback function
+      cb(result);
+    });
+  }
 };
 
-// Export the orm object for the model (burger.js).
+// Exporting connection for the ORM to utilize
 module.exports = orm;

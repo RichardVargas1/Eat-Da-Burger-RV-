@@ -1,0 +1,29 @@
+body {
+    /* Burger Wallpaper */
+    background-image: url("../images/Burger_Wallpaper.jpg");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.burgerBody {
+    font-weight: bold;
+    width: 100%;
+    max-width: 800px;
+    margin: 80px;
+    background-color: rgb(253, 209, 128);
+    color: black;
+}
+
+.footer {
+    width: 10%;
+    bottom: 0;
+    padding: 20px 0;
+    font-size: 14px;
+    color: white;
+    text-align: center;
+    background: #666;
+    border-bottom: 8px solid rgb(253, 209, 128);
+    position: center;
+}
